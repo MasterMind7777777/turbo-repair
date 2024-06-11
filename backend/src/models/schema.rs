@@ -1,10 +1,9 @@
-use diesel::table;
+// @generated automatically by Diesel CLI.
 
-table! {
+diesel::table! {
     users (id) {
         id -> Uuid,
         email -> Varchar,
         password -> Varchar,
     }
 }
-
