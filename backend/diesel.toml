@@ -8,5 +8,6 @@ custom_type_derives = ["diesel::query_builder::QueryId"]
 [migrations_directory]
 dir = "migrations"
 
-[test]
-url = "postgres://test_user:test_password@localhost/test_database"
+# Not working
+# [test]
+# url = "postgres://test_user:test_password@localhost/test_database"

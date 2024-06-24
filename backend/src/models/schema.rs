@@ -3,7 +3,7 @@
 diesel::table! {
     addresses (id) {
         id -> Uuid,
-        repair_shop_id -> Nullable<Uuid>,
+        repair_shop_id -> Uuid,
         street -> Varchar,
         city -> Varchar,
         state -> Varchar,
@@ -55,8 +55,8 @@ diesel::table! {
 diesel::table! {
     staff (id) {
         id -> Uuid,
-        user_id -> Nullable<Uuid>,
-        repair_shop_id -> Nullable<Uuid>,
+        user_id -> Uuid,
+        repair_shop_id -> Uuid,
         role -> Varchar,
         created_at -> Timestamp,
     }
@@ -65,7 +65,7 @@ diesel::table! {
 diesel::table! {
     status_pipeline (id) {
         id -> Uuid,
-        order_id -> Nullable<Uuid>,
+        order_id -> Uuid,
         status -> Varchar,
         timestamp -> Timestamp,
     }

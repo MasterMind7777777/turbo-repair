@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  db_test:
+    image: postgres:13
+    container_name: turbo_repair_test_db
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_database
+      PG_MAX_CONNECTIONS: 100  # Add this line to set the max connections
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./postgres-test-data:/var/lib/postgresql/data
