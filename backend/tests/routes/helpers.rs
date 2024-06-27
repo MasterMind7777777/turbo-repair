@@ -72,16 +72,15 @@ pub fn create_test_database() {
 
 pub fn clean_up_database(conn: &mut PgConnection) {
     println!("Cleaning up database...");
-    diesel::delete(addresses::table).execute(conn).unwrap();
-    diesel::delete(bids::table).execute(conn).unwrap();
-    diesel::delete(orders::table).execute(conn).unwrap();
-    diesel::delete(repair_requests::table).execute(conn).unwrap();
-    diesel::delete(repair_shops::table).execute(conn).unwrap();
-    diesel::delete(staff::table).execute(conn).unwrap();
     diesel::delete(status_pipeline::table).execute(conn).unwrap();
+    diesel::delete(orders::table).execute(conn).unwrap();
+    diesel::delete(bids::table).execute(conn).unwrap();
+    diesel::delete(repair_requests::table).execute(conn).unwrap();
+    diesel::delete(staff::table).execute(conn).unwrap();
+    diesel::delete(addresses::table).execute(conn).unwrap();
+    diesel::delete(repair_shops::table).execute(conn).unwrap();
     diesel::delete(users::table).execute(conn).unwrap();
 
-    // Query to find and reset all sequences in the current database
     let reset_sequences_query = "
         DO $$ DECLARE
             r RECORD;
@@ -93,7 +92,6 @@ pub fn clean_up_database(conn: &mut PgConnection) {
     ";
 
     conn.batch_execute(reset_sequences_query).unwrap();
-
     println!("Database cleanup completed.");
 }
 

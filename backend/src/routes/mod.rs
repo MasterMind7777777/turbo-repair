@@ -4,8 +4,11 @@ pub mod repair_shop;
 pub mod repair_request;
 pub mod bid;
 pub mod order;
+pub mod address;
 
 use actix_web::web;
+
+
 
 pub fn auth(cfg: &mut web::ServiceConfig) {
     auth::init(cfg);
@@ -17,5 +20,6 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     repair_request::init(cfg);
     bid::init(cfg);
     order::init(cfg);
+    address::init(cfg);
 }
 

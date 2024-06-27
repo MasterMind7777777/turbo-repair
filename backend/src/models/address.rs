@@ -17,3 +17,14 @@ pub struct Address {
     pub created_at: NaiveDateTime,
 }
 
+
+#[derive(Queryable, Insertable, Serialize, Deserialize)]
+#[diesel(table_name = addresses)]
+pub struct AddressInput {
+    pub repair_shop_id: Uuid,
+    pub street: String,
+    pub city: String,
+    pub state: String,
+    pub zip: String,
+    pub country: String,
+}
