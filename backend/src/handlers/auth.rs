@@ -1,6 +1,6 @@
 use actix_web::{web, HttpResponse};
 use log::info;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use diesel::result::DatabaseErrorKind;
 use diesel::result::Error as DieselError;
@@ -17,6 +17,12 @@ use rand_core::OsRng;
 pub struct LoginInput {
     pub email: String,
     pub password: String,
+}
+
+
+#[derive(Deserialize, Serialize)]
+struct RegisterResponse {
+    id: String,
 }
 
 
@@ -40,7 +46,7 @@ pub async fn register_user(user: web::Json<UserInput>) -> HttpResponse {
         .execute(&mut conn) {
         Ok(_) => {
             info!("User registered successfully");
-            HttpResponse::Ok().json("User registered successfully")
+            HttpResponse::Ok().json(RegisterResponse { id: new_user.id.to_string() })
         },
         Err(DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, info)) => {
             let constraint = info.constraint_name().unwrap_or("unknown");

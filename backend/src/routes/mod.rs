@@ -5,6 +5,8 @@ pub mod repair_request;
 pub mod bid;
 pub mod order;
 pub mod address;
+pub mod staff;
+pub mod status_pipeline;
 
 use actix_web::web;
 
@@ -21,5 +23,7 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     bid::init(cfg);
     order::init(cfg);
     address::init(cfg);
+    staff::init(cfg);
+    status_pipeline::init(cfg);
 }
 

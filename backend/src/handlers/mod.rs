@@ -5,3 +5,5 @@ pub mod repair_request;
 pub mod bid;
 pub mod order;
 pub mod address;
+pub mod staff;
+pub mod status_pipeline;

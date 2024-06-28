@@ -14,3 +14,10 @@ pub struct Staff {
     pub created_at: NaiveDateTime,
 }
 
+#[derive(Insertable, Serialize, Deserialize)]
+#[diesel(table_name = staff)]
+pub struct StaffInput {
+    pub user_id: Uuid,
+    pub repair_shop_id: Uuid,
+    pub role: String,
+}

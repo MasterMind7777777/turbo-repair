@@ -13,3 +13,9 @@ pub struct StatusPipeline {
     pub timestamp: NaiveDateTime,
 }
 
+#[derive(Insertable, Serialize, Deserialize)]
+#[diesel(table_name = status_pipeline)]
+pub struct StatusPipelineInput {
+    pub order_id: Uuid,
+    pub status: String,
+}

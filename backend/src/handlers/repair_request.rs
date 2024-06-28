@@ -1,9 +1,15 @@
 use actix_web::{web, HttpResponse};
 use diesel::prelude::*;
+use serde::Serialize;
 use uuid::Uuid;
 use crate::models::repair_request::{RepairRequest, RepairRequestInput};
 use crate::utils::db::establish_connection;
 use crate::models::schema::repair_requests::dsl::repair_requests;
+
+#[derive(Serialize)]
+struct RepairRequestResponse {
+    id: String,
+}
 
 pub async fn create_repair_request(request: web::Json<RepairRequestInput>) -> HttpResponse {
     let mut conn = establish_connection();
@@ -19,7 +25,7 @@ pub async fn create_repair_request(request: web::Json<RepairRequestInput>) -> Ht
         .execute(&mut conn);
 
     match result {
-        Ok(_) => HttpResponse::Created().json(new_request),
+        Ok(_) => HttpResponse::Created().json(RepairRequestResponse { id: new_request.id.to_string() }),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
