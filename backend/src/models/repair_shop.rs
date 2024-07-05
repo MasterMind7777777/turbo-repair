@@ -17,3 +17,9 @@ pub struct RepairShopInput {
     pub name: String,
 }
 
+#[derive(AsChangeset, Deserialize)]
+#[diesel(table_name = repair_shops)]
+pub struct PartialRepairShopInput {
+    pub name: Option<String>,
+}
+

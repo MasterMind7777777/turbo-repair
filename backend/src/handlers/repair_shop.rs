@@ -1,7 +1,7 @@
 use actix_web::{web, HttpResponse};
 use diesel::prelude::*;
 use uuid::Uuid;
-use crate::models::repair_shop::{RepairShop, RepairShopInput};
+use crate::models::repair_shop::{PartialRepairShopInput, RepairShop, RepairShopInput};
 use crate::utils::db::establish_connection;
 use crate::models::schema::repair_shops::dsl::repair_shops;
 
@@ -34,12 +34,37 @@ pub async fn get_repair_shop(shop_id: web::Path<Uuid>) -> HttpResponse {
     }
 }
 
+pub async fn get_repair_shops() -> HttpResponse {
+    let mut conn = establish_connection();
+    let results = repair_shops
+        .load::<RepairShop>(&mut conn);
+
+    match results {
+        Ok(shops) => HttpResponse::Ok().json(shops),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
 pub async fn update_repair_shop(shop_id: web::Path<Uuid>, shop_input: web::Json<RepairShopInput>) -> HttpResponse {
     let mut conn = establish_connection();
     let target = repair_shops.filter(crate::models::schema::repair_shops::id.eq(*shop_id));
 
     let result = diesel::update(target)
         .set(crate::models::schema::repair_shops::name.eq(&shop_input.name))
+        .execute(&mut conn);
+
+    match result {
+        Ok(_) => HttpResponse::Ok().finish(),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+pub async fn partially_update_repair_shop(shop_id: web::Path<Uuid>, shop_input: web::Json<PartialRepairShopInput>) -> HttpResponse {
+    let mut conn = establish_connection();
+    let target = repair_shops.filter(crate::models::schema::repair_shops::id.eq(*shop_id));
+
+    let result = diesel::update(target)
+        .set(&shop_input.into_inner())
         .execute(&mut conn);
 
     match result {

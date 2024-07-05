@@ -28,3 +28,13 @@ pub struct AddressInput {
     pub zip: String,
     pub country: String,
 }
+
+#[derive(AsChangeset, Deserialize)]
+#[diesel(table_name = addresses)]
+pub struct PartialAddressInput {
+    pub street: Option<String>,
+    pub city: Option<String>,
+    pub state: Option<String>,
+    pub zip: Option<String>,
+    pub country: Option<String>,
+}

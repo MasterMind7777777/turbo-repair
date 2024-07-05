@@ -22,3 +22,8 @@ pub struct OrderInput {
     pub status: String,
 }
 
+
+#[derive(Deserialize)]
+pub struct OrderStatusUpdate {
+    pub status: String,
+}

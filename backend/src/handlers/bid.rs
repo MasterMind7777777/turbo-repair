@@ -22,7 +22,10 @@ pub async fn create_bid(bid: web::Json<BidInput>) -> HttpResponse {
 
     match result {
         Ok(_) => HttpResponse::Created().json(new_bid),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            eprintln!("Error creating bid: {:?}", e);
+            HttpResponse::BadRequest().body(format!("Error creating bid: {:?}", e))
+        },
     }
 }
 
