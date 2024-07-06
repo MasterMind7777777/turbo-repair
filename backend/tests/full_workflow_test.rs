@@ -60,7 +60,8 @@ pub fn clean_up_database(conn: &mut PgConnection) {
 
 #[derive(Deserialize)]
 struct RegisterResponse {
-    id: String,
+    user_id: String,
+    token: String,
 }
 
 #[derive(Deserialize)]
@@ -76,6 +77,16 @@ struct RepairRequestResponse {
 #[derive(Deserialize)]
 struct OrderResponse {
     id: String,
+}
+
+#[derive(Deserialize)]
+struct BidResponse {
+    id: String,
+    repair_request_id: String,
+    repair_shop_id: String,
+    bid_amount: f64,
+    status: String,
+    created_at: String,
 }
 
 #[cfg(test)]
@@ -98,7 +109,8 @@ mod integration_tests {
         println!("Register customer response: {:?}", res);
         assert!(res.status().is_success());
         let customer_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered customer ID: {}", customer_response.id);
+        println!("Registered customer ID: {}", customer_response.user_id);
+        let customer_token = customer_response.token;
 
         let res = client.post("http://127.0.0.1:8080/auth/register")
             .json(&json!({ "email": "staff1@example.com", "password": "password" }))
@@ -106,7 +118,8 @@ mod integration_tests {
         println!("Register staff1 response: {:?}", res);
         assert!(res.status().is_success());
         let staff1_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered staff1 ID: {}", staff1_response.id);
+        println!("Registered staff1 ID: {}", staff1_response.user_id);
+        let staff1_token = staff1_response.token;
 
         let res = client.post("http://127.0.0.1:8080/auth/register")
             .json(&json!({ "email": "staff2@example.com", "password": "password" }))
@@ -114,32 +127,11 @@ mod integration_tests {
         println!("Register staff2 response: {:?}", res);
         assert!(res.status().is_success());
         let staff2_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered staff2 ID: {}", staff2_response.id);
-
-        // Log in users and get tokens
-        let mut res = client.post("http://127.0.0.1:8080/auth/login")
-            .json(&json!({ "email": "customer@example.com", "password": "password" }))
-            .send().await.unwrap();
-        println!("Login customer response: {:?}", res);
-        let customer_token: String = res.text().await.unwrap().replace('"', "");
-        println!("Customer token: {}", customer_token);
-
-        res = client.post("http://127.0.0.1:8080/auth/login")
-            .json(&json!({ "email": "staff1@example.com", "password": "password" }))
-            .send().await.unwrap();
-        println!("Login staff1 response: {:?}", res);
-        let staff1_token: String = res.text().await.unwrap().replace('"', "");
-        println!("Staff1 token: {}", staff1_token);
-
-        res = client.post("http://127.0.0.1:8080/auth/login")
-            .json(&json!({ "email": "staff2@example.com", "password": "password" }))
-            .send().await.unwrap();
-        println!("Login staff2 response: {:?}", res);
-        let staff2_token: String = res.text().await.unwrap().replace('"', "");
-        println!("Staff2 token: {}", staff2_token);
+        println!("Registered staff2 ID: {}", staff2_response.user_id);
+        let staff2_token = staff2_response.token;
 
         // Create repair shops
-        res = client.post("http://127.0.0.1:8080/repair_shop")
+        let res = client.post("http://127.0.0.1:8080/repair_shop")
             .bearer_auth(&staff1_token)
             .json(&json!({ "name": "Shop 1" }))
             .send().await.unwrap();
@@ -149,7 +141,7 @@ mod integration_tests {
         println!("Create repair shop 1 response body: {}", raw_body);
         let repair_shop1_id: RepairShopResponse = serde_json::from_str(&raw_body).unwrap();
 
-        res = client.post("http://127.0.0.1:8080/repair_shop")
+        let res = client.post("http://127.0.0.1:8080/repair_shop")
             .bearer_auth(&staff2_token)
             .json(&json!({ "name": "Shop 2" }))
             .send().await.unwrap();
@@ -160,7 +152,7 @@ mod integration_tests {
         let repair_shop2_id: RepairShopResponse = serde_json::from_str(&raw_body).unwrap();
 
         // Add addresses for the repair shops
-        res = client.post("http://127.0.0.1:8080/address")
+        let res = client.post("http://127.0.0.1:8080/address")
             .bearer_auth(&staff1_token)
             .json(&json!({
                 "repair_shop_id": repair_shop1_id.id,
@@ -177,7 +169,7 @@ mod integration_tests {
         println!("Add address response for Shop 1 body: {}", raw_body);
         assert!(status.is_success());
 
-        res = client.post("http://127.0.0.1:8080/address")
+        let res = client.post("http://127.0.0.1:8080/address")
             .bearer_auth(&staff2_token)
             .json(&json!({
                 "repair_shop_id": repair_shop2_id.id,
@@ -195,10 +187,10 @@ mod integration_tests {
         assert!(status.is_success());
 
         // Customer submits a repair request
-        res = client.post("http://127.0.0.1:8080/repair_request")
+        let res = client.post("http://127.0.0.1:8080/repair_request")
             .bearer_auth(&customer_token)
             .json(&json!({
-                "customer_id": customer_response.id,
+                "customer_id": customer_response.user_id,
                 "description": "Fix my shoes"
             }))
             .send().await.unwrap();
@@ -209,7 +201,7 @@ mod integration_tests {
         let repair_request_id: RepairRequestResponse = serde_json::from_str(&raw_body).unwrap();
 
         // Staff members submit bids
-        res = client.post("http://127.0.0.1:8080/bid")
+        let res = client.post("http://127.0.0.1:8080/bid")
             .bearer_auth(&staff1_token)
             .json(&json!({
                 "repair_request_id": repair_request_id.id,
@@ -222,9 +214,9 @@ mod integration_tests {
         let raw_body = res.text().await.unwrap();
         println!("Submit bid response for staff1 status: {:?}", status);
         println!("Submit bid response for staff1 body: {}", raw_body);
-        let _bid1_id: RegisterResponse = serde_json::from_str(&raw_body).unwrap();
+        let _bid1_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
 
-        res = client.post("http://127.0.0.1:8080/bid")
+        let res = client.post("http://127.0.0.1:8080/bid")
             .bearer_auth(&staff2_token)
             .json(&json!({
                 "repair_request_id": repair_request_id.id,
@@ -236,11 +228,13 @@ mod integration_tests {
         let status = res.status();
         let raw_body = res.text().await.unwrap();
         println!("Submit bid response for staff2 status: {:?}", status);
-        println!("Submit bid response for staff2 body: {}", raw_body);
-        let _bid2_id: RegisterResponse = serde_json::from_str(&raw_body).unwrap();
+        println!("Submit bid response for
+
+ staff2 body: {}", raw_body);
+        let _bid2_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
 
         // Customer accepts the lowest bid and creates an order
-        res = client.post("http://127.0.0.1:8080/order")
+        let res = client.post("http://127.0.0.1:8080/order")
             .bearer_auth(&customer_token)
             .json(&json!({
                 "repair_request_id": repair_request_id.id,
@@ -256,7 +250,7 @@ mod integration_tests {
 
         // Staff updates the order status using PATCH
         let order_id: OrderResponse = serde_json::from_str(&raw_body).unwrap();
-        let mut res = client.patch(&format!("http://127.0.0.1:8080/order/{}", order_id.id))
+        let res = client.patch(&format!("http://127.0.0.1:8080/order/{}", order_id.id))
             .bearer_auth(&staff2_token)
             .json(&json!({ "status": "in_progress" }))
             .send().await.unwrap();
@@ -267,13 +261,11 @@ mod integration_tests {
         assert!(status.is_success());
 
         // Add status pipeline entry
-        res = client.post("http://127.0.0.1:8080/status_pipeline")
+        let res = client.post("http://127.0.0.1:8080/status_pipeline")
             .bearer_auth(&staff2_token)
             .json(&json!({
                 "order_id": order_id.id,
-                "status": "in_progress
-
-"
+                "status": "in_progress"
             }))
             .send().await.unwrap();
         let status = res.status();
@@ -281,6 +273,5 @@ mod integration_tests {
         println!("Add status pipeline response status: {:?}", status);
         println!("Add status pipeline response body: {}", raw_body);
         assert!(status.is_success());
-        assert!(!status.is_success());
     }
 }

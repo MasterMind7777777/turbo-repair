@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import { registerUser } from '../services/auth';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [response, setResponse] = useState<string>('');
+  const { setToken } = useAuth();
 
   const handleRegister = async () => {
     try {
-      const { id } = await registerUser(email, password);
-      setResponse(`Success: ${id}`);
+      const { user_id, token } = await registerUser(email, password);
+      setToken(token, user_id);
+      setResponse(`Success: ${user_id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setResponse(`Error: ${error.response.data}`);
@@ -23,7 +26,6 @@ const Register: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4">Register</Typography>
       <TextField
         label="Email"
         value={email}

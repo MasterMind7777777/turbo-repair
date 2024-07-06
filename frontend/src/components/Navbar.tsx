@@ -27,6 +27,9 @@ const Navbar: React.FC = () => {
         <Button color="inherit" component={Link} to="/status-pipeline">
           Status Pipeline
         </Button>
+        <Button color="inherit" component={Link} to="/staff">
+          Staff
+        </Button>
       </Toolbar>
     </AppBar>
   );

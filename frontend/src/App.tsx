@@ -7,6 +7,7 @@ import BidPage from './pages/BidPage';
 import OrderPage from './pages/OrderPage';
 import StatusPipelinePage from './pages/StatusPipelinePage';
 import Navbar from './components/Navbar';
+import StaffPage from './pages/StaffPage';
 
 const AppRouter: React.FC = () => {
   return (
@@ -19,6 +20,8 @@ const AppRouter: React.FC = () => {
         <Route path="/bid" element={<BidPage />} />
         <Route path="/order" element={<OrderPage />} />
         <Route path="/status-pipeline" element={<StatusPipelinePage />} />
+        <Route path="/staff" element={<StaffPage />} />
+        <Route path="*" element={<h1>Not Found</h1>} />
       </Routes>
     </Router>
   );

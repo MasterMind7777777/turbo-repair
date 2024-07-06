@@ -12,8 +12,8 @@ const Login: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      const token = await loginUser(email, password);
-      setToken(token);
+      const { token, user_id } = await loginUser(email, password);
+      setToken(token, user_id);
       setResponse('Login successful');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -26,7 +26,6 @@ const Login: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4">Login</Typography>
       <TextField
         label="Email"
         value={email}

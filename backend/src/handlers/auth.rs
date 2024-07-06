@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use diesel::prelude::*;
 use diesel::result::DatabaseErrorKind;
 use diesel::result::Error as DieselError;
+use serde_json::json;
 use uuid::Uuid;
 use crate::models::user::{User, UserInput};
 use crate::utils::db::establish_connection;
@@ -19,12 +20,11 @@ pub struct LoginInput {
     pub password: String,
 }
 
-
 #[derive(Deserialize, Serialize)]
 struct RegisterResponse {
-    id: String,
+    user_id: String,
+    token: String,
 }
-
 
 pub fn hash_password(password: &str) -> String {
     let salt = SaltString::generate(&mut OsRng);
@@ -45,8 +45,12 @@ pub async fn register_user(user: web::Json<UserInput>) -> HttpResponse {
         .values(&new_user)
         .execute(&mut conn) {
         Ok(_) => {
+            let token = generate_jwt(&new_user.id.to_string());
             info!("User registered successfully");
-            HttpResponse::Ok().json(RegisterResponse { id: new_user.id.to_string() })
+            HttpResponse::Ok().json(json!({
+                "user_id": new_user.id.to_string(),
+                "token": token
+            }))
         },
         Err(DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, info)) => {
             let constraint = info.constraint_name().unwrap_or("unknown");
@@ -69,7 +73,7 @@ pub async fn login(login_input: web::Json<LoginInput>) -> HttpResponse {
         Ok(user) => {
             if user.verify_password(&login_input.password) {
                 let token = generate_jwt(&user.id.to_string());
-                HttpResponse::Ok().json(token)
+                HttpResponse::Ok().json(json!({ "token": token, "user_id": user.id }))
             } else {
                 HttpResponse::Unauthorized().finish()
             }

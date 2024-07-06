@@ -1,5 +1,5 @@
 use actix_web::web;
-use crate::handlers::staff::{create_staff, delete_staff, get_staff, get_staffs, update_staff};
+use crate::handlers::staff::{create_staff, delete_staff, get_staff, get_staffs, update_staff, add_staff};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     cfg.service(
@@ -12,6 +12,10 @@ pub fn init(cfg: &mut web::ServiceConfig) {
             .route(web::get().to(get_staff))
             .route(web::put().to(update_staff))
             .route(web::delete().to(delete_staff)),
+    );
+    cfg.service(
+        web::resource("/staff/add")
+            .route(web::post().to(add_staff)),
     );
 }
 

@@ -1,5 +1,6 @@
 export interface RegisterResponse {
-  id: string;
+  user_id: string;
+  token: string;
 }
 
 export interface RepairShopResponse {
@@ -21,6 +22,13 @@ export interface AddressResponse {
 
 export interface RepairRequestResponse {
   id: string;
+}
+
+export interface RepairRequestListResponse {
+  id: string;
+  customer_id: string;
+  description: string;
+  created_at: string;
 }
 
 export interface BidResponse {
@@ -48,3 +56,12 @@ export interface StatusPipelineResponse {
   timestamp: string;
 }
 
+export interface StaffResponse {
+  id: string;
+}
+
+
+export interface UserDetailsResponce {
+  id: string;
+  email: string;
+}
