@@ -44,6 +44,16 @@ pub async fn create_order(order: web::Json<OrderInput>) -> HttpResponse {
     }
 }
 
+pub async fn get_orders() -> HttpResponse {
+    let mut conn = establish_connection();
+    let result = orders.load::<Order>(&mut conn);
+
+    match result {
+        Ok(order_list) => HttpResponse::Ok().json(order_list),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
 pub async fn get_order(order_id: web::Path<Uuid>) -> HttpResponse {
     let mut conn = establish_connection();
     let result = orders.filter(crate::models::schema::orders::id.eq(*order_id))

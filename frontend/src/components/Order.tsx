@@ -1,43 +1,49 @@
-import React, { useState } from 'react';
-import { TextField, Button, Container, Typography } from '@mui/material';
-import { createOrder, updateOrderStatus } from '../services/order';
+import React, { useState, useEffect } from 'react';
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+} from '@mui/material';
+import { getOrders, updateOrderStatus } from '../services/order';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { OrderResponse } from '../services/types';
 
 const Order: React.FC = () => {
-  const [repairRequestId, setRepairRequestId] = useState<string>('');
-  const [repairShopId, setRepairShopId] = useState<string>('');
-  const [status, setStatus] = useState<string>('accepted');
-  const [orderId, setOrderId] = useState<string>('');
+  const [orders, setOrders] = useState<OrderResponse[]>([]);
+  const [status, setStatus] = useState<string>('in_progress');
   const [response, setResponse] = useState<string>('');
   const { token } = useAuth();
 
-  const handleCreateOrder = async () => {
-    if (!token) {
-      setResponse('Error: Not authenticated');
-      return;
-    }
+  const fetchOrders = async () => {
     try {
-      const { id } = await createOrder(repairRequestId, repairShopId, status);
-      setOrderId(id);
-      setResponse(`Order created successfully: ${id}`);
+      const orderList = await getOrders();
+      setOrders(orderList);
     } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
-      } else {
-        setResponse('Error: Unable to create order');
-      }
+      console.error('Error fetching orders:', error);
     }
   };
 
-  const handleUpdateOrderStatus = async () => {
+  useEffect(() => {
+    if (token) {
+      fetchOrders();
+    }
+  }, [token]);
+
+  const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
     if (!token) {
       setResponse('Error: Not authenticated');
       return;
     }
     try {
-      const { id } = await updateOrderStatus(orderId, 'in_progress');
+      await updateOrderStatus(id, newStatus);
       setResponse(`Order status updated: ${id}`);
+      fetchOrders(); // Refresh the list after status update
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         setResponse(`Error: ${error.response.data}`);
@@ -49,42 +55,27 @@ const Order: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4">Create Order</Typography>
-      <TextField
-        label="Repair Request ID"
-        value={repairRequestId}
-        onChange={(e) => setRepairRequestId(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Repair Shop ID"
-        value={repairShopId}
-        onChange={(e) => setRepairShopId(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Status"
-        value={status}
-        onChange={(e) => setStatus(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <Button variant="contained" color="primary" onClick={handleCreateOrder}>
-        Create Order
-      </Button>
-      <Typography variant="h4">Update Order Status</Typography>
-      <TextField
-        label="Order ID"
-        value={orderId}
-        onChange={(e) => setOrderId(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <Button variant="contained" color="primary" onClick={handleUpdateOrderStatus}>
-        Update Status
-      </Button>
+      <Typography variant="h4">Orders</Typography>
+      <List>
+        {orders.map(order => (
+          <ListItem key={order.id} component={Paper} elevation={1}>
+            <ListItemText
+              primary={`Order ID: ${order.id}`}
+              secondary={`Status: ${order.status} | Created at: ${new Date(order.created_at).toLocaleString()}`}
+            />
+            <TextField
+              label="New Status"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              fullWidth
+              margin="normal"
+            />
+            <Button variant="contained" color="primary" onClick={() => handleUpdateOrderStatus(order.id, status)}>
+              Update Status
+            </Button>
+          </ListItem>
+        ))}
+      </List>
       {response && <Typography>{response}</Typography>}
     </Container>
   );

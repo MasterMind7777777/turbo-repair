@@ -1,6 +1,6 @@
 use actix_web::web;
 use log::info;
-use crate::handlers::order::{create_order, get_order, update_order, delete_order, patch_order_status};
+use crate::handlers::order::{create_order, delete_order, get_order, get_orders, patch_order_status, update_order};
 
 pub fn init(cfg: &mut web::ServiceConfig) {
     info!("Configuring order routes");
@@ -13,7 +13,8 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     )
     .service(
         web::resource("/order")
-            .route(web::post().to(create_order)),
+            .route(web::post().to(create_order))
+            .route(web::get().to(get_orders)),
     );
 }
 

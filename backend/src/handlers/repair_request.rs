@@ -2,6 +2,7 @@ use crate::models::schema::{repair_requests as schema_repair_requests, staff, or
 use actix_web::{web, HttpRequest, HttpResponse};
 use actix_web::http::Error;
 use diesel::prelude::*;
+use log::{error, info};
 use serde::Serialize;
 use uuid::Uuid;
 use crate::models::repair_request::{RepairRequest, RepairRequestInput};
@@ -80,8 +81,13 @@ pub async fn list_user_repair_requests(req: HttpRequest) -> Result<HttpResponse,
 pub async fn list_available_requests(req: HttpRequest) -> Result<HttpResponse, Error> {
     let user_id = match get_user_id_from_token(&req) {
         Ok(id) => id,
-        Err(_) => return Ok(HttpResponse::Unauthorized().finish()),
+        Err(_) => {
+            error!("Unauthorized access attempt");
+            return Ok(HttpResponse::Unauthorized().finish());
+        }
     };
+
+    info!("Authenticated user ID: {}", user_id);
 
     let mut conn = establish_connection();
 
@@ -92,24 +98,28 @@ pub async fn list_available_requests(req: HttpRequest) -> Result<HttpResponse, E
         .get_result::<i64>(&mut conn)
         .expect("Error loading staff count");
 
+    info!("Staff count for user ID {}: {}", user_id, staff_count);
+
     if staff_count == 0 {
+        info!("Forbidden access attempt by user ID {}", user_id);
         return Ok(HttpResponse::Forbidden().finish());
     }
 
     // Get available repair requests (i.e., those without orders)
-    let results = schema_repair_requests::table
-        .left_join(schema_orders::table.on(schema_repair_requests::id.eq(schema_orders::repair_request_id)))
-        .filter(schema_orders::id.is_null())
+    let results = schema_repair_requests::dsl::repair_requests
+        .left_join(schema_orders::dsl::orders.on(schema_repair_requests::dsl::id.eq(schema_orders::dsl::repair_request_id)))
+        .filter(schema_orders::dsl::id.is_null())
         .select((
-            schema_repair_requests::id,
-            schema_repair_requests::customer_id,
-            schema_repair_requests::description,
-            schema_repair_requests::created_at,
+            schema_repair_requests::dsl::id,
+            schema_repair_requests::dsl::customer_id,
+            schema_repair_requests::dsl::description,
+            schema_repair_requests::dsl::created_at,
         ))
         .load::<(Uuid, Uuid, String, chrono::NaiveDateTime)>(&mut conn);
 
     match results {
         Ok(requests) => {
+            info!("Found {} available repair requests", requests.len());
             let response: Vec<RepairRequestListResponse> = requests.into_iter().map(|(id, customer_id, description, created_at)| {
                 RepairRequestListResponse {
                     id: id.to_string(),
@@ -120,7 +130,10 @@ pub async fn list_available_requests(req: HttpRequest) -> Result<HttpResponse, E
             }).collect();
             Ok(HttpResponse::Ok().json(response))
         },
-        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+        Err(e) => {
+            error!("Error loading available repair requests: {:?}", e);
+            Ok(HttpResponse::InternalServerError().finish())
+        }
     }
 }
 

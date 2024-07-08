@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Button, Container, Typography, Grid, Paper, Box } from '@mui/material';
+import { TextField, Button, Container, Typography, Grid, Paper, Box, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { submitBid } from '../services/bid';
 import { getAvailableRequests } from '../services/repairRequest';
+import { getRepairShops } from '../services/repairShop';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { RepairRequestListResponse } from '../services/types';
+import { RepairRequestListResponse, RepairShopResponse } from '../services/types';
 
 const Bid: React.FC = () => {
   const [availableRequests, setAvailableRequests] = useState<RepairRequestListResponse[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<RepairRequestListResponse | null>(null);
-  const [repairShopId, setRepairShopId] = useState<string>('');
+  const [repairShops, setRepairShops] = useState<RepairShopResponse[]>([]);
+  const [selectedRepairShopId, setSelectedRepairShopId] = useState<string>('');
   const [status, setStatus] = useState<string>('pending');
   const [bidAmount, setBidAmount] = useState<number>(0);
   const [response, setResponse] = useState<string>('');
@@ -18,6 +20,7 @@ const Bid: React.FC = () => {
   useEffect(() => {
     if (token) {
       fetchAvailableRequests();
+      fetchRepairShops();
     }
   }, [token]);
 
@@ -30,13 +33,22 @@ const Bid: React.FC = () => {
     }
   };
 
+  const fetchRepairShops = async () => {
+    try {
+      const shops = await getRepairShops();
+      setRepairShops(shops);
+    } catch (error) {
+      console.error('Error fetching repair shops:', error);
+    }
+  };
+
   const handleBid = async () => {
-    if (!token || !selectedRequest) {
-      setResponse('Error: Not authenticated or no request selected');
+    if (!token || !selectedRequest || !selectedRepairShopId) {
+      setResponse('Error: Not authenticated or no request/repair shop selected');
       return;
     }
     try {
-      const { id } = await submitBid(selectedRequest.id, repairShopId, status, bidAmount);
+      const { id } = await submitBid(selectedRequest.id, selectedRepairShopId, status, bidAmount);
       setResponse(`Bid submitted successfully: ${id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -73,13 +85,20 @@ const Bid: React.FC = () => {
           <Typography variant="h6">
             Repair Request: {selectedRequest.description} (ID: {selectedRequest.id})
           </Typography>
-          <TextField
-            label="Repair Shop ID"
-            value={repairShopId}
-            onChange={(e) => setRepairShopId(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="repair-shop-label">Repair Shop</InputLabel>
+            <Select
+              labelId="repair-shop-label"
+              value={selectedRepairShopId}
+              onChange={(e) => setSelectedRepairShopId(e.target.value as string)}
+            >
+              {repairShops.map(shop => (
+                <MenuItem key={shop.id} value={shop.id}>
+                  {shop.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             label="Status"
             value={status}

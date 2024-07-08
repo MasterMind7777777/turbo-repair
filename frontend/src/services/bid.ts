@@ -16,3 +16,12 @@ export const submitBid = async (
   return response.data;
 };
 
+export const getBidsForRequest = async (repairRequestId: string) => {
+  const response = await apiClient.get<BidResponse[]>(`/bids/for_request?repair_request_id=${repairRequestId}`);
+  return response.data;
+};
+
+export const acceptBid = async (bidId: string) => {
+  const response = await apiClient.post(`/bid/${bidId}/accept`);
+  return response.data;
+};
