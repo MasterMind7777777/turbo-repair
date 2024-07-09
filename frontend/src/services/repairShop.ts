@@ -6,6 +6,12 @@ export const createRepairShop = async (name: string): Promise<RepairShopResponse
   return response.data;
 };
 
+
+export const getRepairShopById = async (id: string): Promise<RepairShopResponse> => {
+  const response = await apiClient.get<RepairShopResponse>(`/repair_shop/${id}`);
+  return response.data;
+};
+
 export const getRepairShops = async (): Promise<RepairShopResponse[]> => {
   const response = await apiClient.get<RepairShopResponse[]>('/repair_shop');
   return response.data;

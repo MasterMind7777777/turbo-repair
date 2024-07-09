@@ -8,6 +8,7 @@ import OrderPage from './pages/OrderPage';
 import StatusPipelinePage from './pages/StatusPipelinePage';
 import Navbar from './components/Navbar';
 import StaffPage from './pages/StaffPage';
+import RepairShopDetailPage from './pages/RepairShopDetailPage';
 
 const AppRouter: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const AppRouter: React.FC = () => {
       <Routes>
         <Route path="/" element={<AuthPage />} />
         <Route path="/repair-shop" element={<RepairShopPage />} />
+        <Route path="/repair-shop/:id" element={<RepairShopDetailPage />} />
         <Route path="/repair-request" element={<RepairRequestPage />} />
         <Route path="/bid" element={<BidPage />} />
         <Route path="/order" element={<OrderPage />} />

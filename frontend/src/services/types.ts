@@ -65,3 +65,36 @@ export interface UserDetailsResponce {
   id: string;
   email: string;
 }
+
+
+export interface UserRequestResponse {
+  id: string;
+  user_id: string;
+  repair_shop_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface UserRequestListResponse {
+  id: string;
+  user_id: string;
+  repair_shop_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface StaffTaskResponse {
+  id: string;
+  author_id: string;
+  repair_shop_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface StaffTaskListResponse {
+  id: string;
+  author_id: string;
+  repair_shop_id: string;
+  content: string;
+  created_at: string;
+}

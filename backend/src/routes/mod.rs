@@ -7,6 +7,8 @@ pub mod order;
 pub mod address;
 pub mod staff;
 pub mod status_pipeline;
+pub mod staff_task;
+pub mod user_request;
 
 use actix_web::web;
 
@@ -25,5 +27,7 @@ pub fn init(cfg: &mut web::ServiceConfig) {
     address::init(cfg);
     staff::init(cfg);
     status_pipeline::init(cfg);
+    staff_task::init(cfg);
+    user_request::init(cfg);
 }
 

@@ -1,3 +1,4 @@
+// Import the necessary modules and dependencies
 use std::sync::Once;
 use std::thread;
 use std::time::Duration;
@@ -58,28 +59,28 @@ pub fn clean_up_database(conn: &mut PgConnection) {
     println!("Database cleanup completed.");
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct RegisterResponse {
     user_id: String,
     token: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct RepairShopResponse {
     id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct RepairRequestResponse {
     id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct OrderResponse {
     id: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 struct BidResponse {
     id: String,
     repair_request_id: String,
@@ -109,7 +110,7 @@ mod integration_tests {
         println!("Register customer response: {:?}", res);
         assert!(res.status().is_success());
         let customer_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered customer ID: {}", customer_response.user_id);
+        println!("Registered customer: {:?}", customer_response);
         let customer_token = customer_response.token;
 
         let res = client.post("http://127.0.0.1:8080/auth/register")
@@ -118,7 +119,7 @@ mod integration_tests {
         println!("Register staff1 response: {:?}", res);
         assert!(res.status().is_success());
         let staff1_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered staff1 ID: {}", staff1_response.user_id);
+        println!("Registered staff1: {:?}", staff1_response);
         let staff1_token = staff1_response.token;
 
         let res = client.post("http://127.0.0.1:8080/auth/register")
@@ -127,7 +128,7 @@ mod integration_tests {
         println!("Register staff2 response: {:?}", res);
         assert!(res.status().is_success());
         let staff2_response: RegisterResponse = res.json().await.unwrap();
-        println!("Registered staff2 ID: {}", staff2_response.user_id);
+        println!("Registered staff2: {:?}", staff2_response);
         let staff2_token = staff2_response.token;
 
         // Create repair shops
@@ -214,7 +215,13 @@ mod integration_tests {
         let raw_body = res.text().await.unwrap();
         println!("Submit bid response for staff1 status: {:?}", status);
         println!("Submit bid response for staff1 body: {}", raw_body);
-        let _bid1_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
+        let bid1_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
+        println!("Bid 1 ID: {}", bid1_id.id);
+        println!("Bid 1 Repair Request ID: {}", bid1_id.repair_request_id);
+        println!("Bid 1 Repair Shop ID: {}", bid1_id.repair_shop_id);
+        println!("Bid 1 Amount: {}", bid1_id.bid_amount);
+        println!("Bid 1 Status: {}", bid1_id.status);
+        println!("Bid 1 Created At: {}", bid1_id.created_at);
 
         let res = client.post("http://127.0.0.1:8080/bid")
             .bearer_auth(&staff2_token)
@@ -228,10 +235,14 @@ mod integration_tests {
         let status = res.status();
         let raw_body = res.text().await.unwrap();
         println!("Submit bid response for staff2 status: {:?}", status);
-        println!("Submit bid response for
-
- staff2 body: {}", raw_body);
-        let _bid2_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
+        println!("Submit bid response for staff2 body: {}", raw_body);
+        let bid2_id: BidResponse = serde_json::from_str(&raw_body).unwrap();
+        println!("Bid 2 ID: {}", bid2_id.id);
+        println!("Bid 2 Repair Request ID: {}", bid2_id.repair_request_id);
+        println!("Bid 2 Repair Shop ID: {}", bid2_id.repair_shop_id);
+        println!("Bid 2 Amount: {}", bid2_id.bid_amount);
+        println!("Bid 2 Status: {}", bid2_id.status);
+        println!("Bid 2 Created At: {}", bid2_id.created_at);
 
         // Customer accepts the lowest bid and creates an order
         let res = client.post("http://127.0.0.1:8080/order")

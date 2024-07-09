@@ -16,6 +16,7 @@ import { RepairShopResponse, AddressResponse } from '../services/types';
 import AddressForm from './AddressForm';
 import { getAddressByShopId } from '../services/address';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const RepairShopManager: React.FC = () => {
   const [name, setName] = useState<string>('');
@@ -25,6 +26,7 @@ const RepairShopManager: React.FC = () => {
   const [response, setResponse] = useState<string>('');
   const [showAddressForm, setShowAddressForm] = useState<boolean>(false);
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRepairShops = async () => {
@@ -103,6 +105,10 @@ const RepairShopManager: React.FC = () => {
     setSelectedAddress(address);
   };
 
+  const handleGoToRepairShopPage = (id: string) => {
+    navigate(`/repair-shop/${id}`);
+  };
+
   return (
     <Container>
       <Typography variant="h4">{selectedShopId ? 'Edit' : 'Create'} Repair Shop</Typography>
@@ -151,6 +157,9 @@ const RepairShopManager: React.FC = () => {
             <Button variant="contained" color="secondary" onClick={() => handleDelete(shop.id)}>
               Delete
             </Button>
+            <Button variant="contained" color="secondary" onClick={() => handleGoToRepairShopPage(shop.id)}>
+              Go to Repair Shop Page
+            </Button>
           </ListItem>
         ))}
       </List>
@@ -159,3 +168,4 @@ const RepairShopManager: React.FC = () => {
 };
 
 export default RepairShopManager;
+
