@@ -38,7 +38,7 @@ const RepairRequest: React.FC = () => {
       );
       setRepairRequests(requestsWithBidCounts);
     } catch (error) {
-      console.error('Error fetching repair requests:', error);
+      console.error('Ошибка при получении запросов на ремонт:', error);
     }
   };
 
@@ -48,19 +48,19 @@ const RepairRequest: React.FC = () => {
       setSelectedRequestBids(bids);
       setBidsDialogOpen(true);
     } catch (error) {
-      console.error('Error fetching bids:', error);
+      console.error('Ошибка при получении заявок:', error);
     }
   };
 
   const handleAcceptBid = async (bidId: string) => {
     try {
       await acceptBid(bidId);
-      setResponse('Bid accepted and order created.');
+      setResponse('Заявка принята и заказ создан.');
       setBidsDialogOpen(false);
       fetchRepairRequests(); // Refresh the list to show updated state
     } catch (error) {
-      console.error('Error accepting bid:', error);
-      setResponse('Error accepting bid.');
+      console.error('Ошибка при принятии заявки:', error);
+      setResponse('Ошибка при принятии заявки.');
     }
   };
 
@@ -72,76 +72,76 @@ const RepairRequest: React.FC = () => {
 
   const handleRepairRequest = async () => {
     if (!token || !userId) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
     try {
       const { id } = await submitRepairRequest(userId, description);
-      setResponse(`Repair request created: ${id}`);
+      setResponse(`Запрос на ремонт создан: ${id}`);
       fetchRepairRequests(); // Refresh the list after submission
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to submit repair request');
+        setResponse('Ошибка: не удалось отправить запрос на ремонт');
       }
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4">Submit Repair Request</Typography>
+      <Typography variant="h4">Отправить запрос на ремонт</Typography>
       <TextField
-        label="Description"
+        label="Описание"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         fullWidth
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleRepairRequest}>
-        Submit Request
+        Отправить запрос
       </Button>
       {response && <Typography>{response}</Typography>}
 
-      <Typography variant="h5" style={{ marginTop: '2rem' }}>Your Repair Requests</Typography>
+      <Typography variant="h5" style={{ marginTop: '2rem' }}>Ваши запросы на ремонт</Typography>
       <List>
         {repairRequests.map(request => (
           <ListItem key={request.id} component={Paper} elevation={1}>
             <ListItemText
               primary={request.description}
-              secondary={`Submitted on: ${new Date(request.created_at).toLocaleString()} | Bids: ${request.bidCount}`}
+              secondary={`Отправлено: ${new Date(request.created_at).toLocaleString()} | Заявки: ${request.bidCount}`}
             />
             <Button variant="contained" color="primary" onClick={() => fetchBidsForRequest(request.id)}>
-              View Bids
+              Просмотреть заявки
             </Button>
           </ListItem>
         ))}
       </List>
 
       <Dialog open={bidsDialogOpen} onClose={() => setBidsDialogOpen(false)} fullWidth maxWidth="md">
-        <DialogTitle>Bids for Selected Repair Request</DialogTitle>
+        <DialogTitle>Заявки на выбранный запрос на ремонт</DialogTitle>
         <DialogContent>
           {selectedRequestBids.length > 0 ? (
             <List>
               {selectedRequestBids.map(bid => (
                 <ListItem key={bid.id}>
                   <ListItemText
-                    primary={`Bid Amount: ${bid.bid_amount}`}
-                    secondary={`Status: ${bid.status} | Submitted on: ${new Date(bid.created_at).toLocaleString()}`}
+                    primary={`Сумма заявки: ${bid.bid_amount}`}
+                    secondary={`Статус: ${bid.status} | Отправлено: ${new Date(bid.created_at).toLocaleString()}`}
                   />
                   <Button variant="contained" color="primary" onClick={() => handleAcceptBid(bid.id)}>
-                    Accept Bid
+                    Принять заявку
                   </Button>
                 </ListItem>
               ))}
             </List>
           ) : (
-            <Typography>No bids found for this request.</Typography>
+            <Typography>Заявки для этого запроса не найдены.</Typography>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setBidsDialogOpen(false)} color="primary">
-            Close
+            Закрыть
           </Button>
         </DialogActions>
       </Dialog>

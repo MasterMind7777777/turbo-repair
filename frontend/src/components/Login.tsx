@@ -14,12 +14,12 @@ const Login: React.FC = () => {
     try {
       const { token, user_id } = await loginUser(email, password);
       setToken(token, user_id);
-      setResponse('Login successful');
+      setResponse('Вход выполнен успешно');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to login');
+        setResponse('Ошибка: не удалось войти');
       }
     }
   };
@@ -27,14 +27,14 @@ const Login: React.FC = () => {
   return (
     <Container>
       <TextField
-        label="Email"
+        label="Электронная почта"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Password"
+        label="Пароль"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -42,7 +42,7 @@ const Login: React.FC = () => {
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleLogin}>
-        Login
+        Войти
       </Button>
       {response && <Typography>{response}</Typography>}
     </Container>
@@ -50,4 +50,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-

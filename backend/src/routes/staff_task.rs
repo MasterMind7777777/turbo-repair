@@ -12,15 +12,15 @@ pub fn init(cfg: &mut web::ServiceConfig) {
             .route(web::get().to(get_staff_tasks)),
     )
     .service(
+        web::resource("/staff_task/link")
+            .route(web::post().to(link_staff_to_task)),
+    )
+    .service(
         web::resource("/staff_task/{id}")
             .route(web::get().to(get_staff_task))
             .route(web::put().to(update_staff_task))
             .route(web::patch().to(patch_staff_task))
             .route(web::delete().to(delete_staff_task)),
-    )
-    .service(
-        web::resource("/staff_task/link")
-            .route(web::post().to(link_staff_to_task)),
     );
 }
 

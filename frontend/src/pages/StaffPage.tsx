@@ -5,7 +5,7 @@ import AddStaffForm from '../components/AddStaffForm';
 const StaffPage: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4">Manage staff</Typography>
+      <Typography variant="h4">Страница управления персоналом</Typography>
       <AddStaffForm />
     </Container>
   );

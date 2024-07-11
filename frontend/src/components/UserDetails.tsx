@@ -14,24 +14,24 @@ const UserDetails: React.FC = () => {
       getCurrentUser().then(user => {
         setEmail(user.email);
       }).catch(error => {
-        console.error('Error fetching user details:', error);
+        console.error('Ошибка при получении данных пользователя:', error);
       });
     }
   }, [token]);
 
   const handleUpdateProfile = async () => {
     if (!userId) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
     try {
       await updateUserProfile(userId, { email });
-      setResponse('Profile updated successfully');
+      setResponse('Профиль успешно обновлен');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to update profile');
+        setResponse('Ошибка: не удалось обновить профиль');
       }
     }
   };
@@ -41,14 +41,14 @@ const UserDetails: React.FC = () => {
       <Typography variant="body1">id: {userId}</Typography>
       <Paper elevation={3} style={{ padding: '16px', marginTop: '16px' }}>
         <TextField
-          label="Email"
+          label="Электронная почта"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           fullWidth
           margin="normal"
         />
         <Button variant="contained" color="primary" onClick={handleUpdateProfile}>
-          Update Profile
+          Обновить профиль
         </Button>
         {response && <Typography>{response}</Typography>}
       </Paper>
@@ -57,4 +57,3 @@ const UserDetails: React.FC = () => {
 };
 
 export default UserDetails;
-

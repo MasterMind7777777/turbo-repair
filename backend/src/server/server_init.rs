@@ -1,4 +1,5 @@
 use actix_cors::Cors;
+use actix_files as fs;
 use actix_web::http;
 use actix_web::{web, App, HttpServer, HttpResponse, middleware::Logger};
 use actix_web::dev::Server;
@@ -34,14 +35,15 @@ pub async fn create_server() -> std::io::Result<Server> {
             .wrap(cors) // Apply Cors middleware
             .wrap(Logger::default()) // Use Actix's built-in Logger middleware
             .service(
-                web::scope("/auth")
+                web::scope("/api/auth")
                     .configure(routes::auth)  // Public routes under /auth
             )
             .service(
-                web::scope("") // All other routes
+                web::scope("/api") // All other routes
                     .wrap(Auth)  // Apply Auth middleware to these routes
                     .configure(routes::init)  // Protected routes
             )
+            .service(fs::Files::new("/", "./static").index_file("index.html"))
     })
     .bind("127.0.0.1:8080")?
     .run();

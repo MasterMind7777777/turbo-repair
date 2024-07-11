@@ -34,7 +34,7 @@ const RepairShopManager: React.FC = () => {
         const shops = await getRepairShops();
         setRepairShops(shops);
       } catch (error) {
-        console.error('Error fetching repair shops:', error);
+        console.error('Ошибка при получении ремонтных мастерских:', error);
       }
     };
     fetchRepairShops();
@@ -42,7 +42,7 @@ const RepairShopManager: React.FC = () => {
 
   const handleCreateOrUpdateShop = async () => {
     if (!token) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
 
@@ -50,11 +50,11 @@ const RepairShopManager: React.FC = () => {
       let shopId: string;
       if (selectedShopId) {
         await updateRepairShop(selectedShopId, name);
-        setResponse(`Shop updated: ${selectedShopId}`);
+        setResponse(`Мастерская обновлена: ${selectedShopId}`);
         shopId = selectedShopId;
       } else {
         const { id } = await createRepairShop(name);
-        setResponse(`Shop created: ${id}`);
+        setResponse(`Мастерская создана: ${id}`);
         shopId = id;
         handleEdit({ id, name, created_at: new Date().toISOString() } as RepairShopResponse);
       }
@@ -68,9 +68,9 @@ const RepairShopManager: React.FC = () => {
       setRepairShops(shops);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to create/update shop');
+        setResponse('Ошибка: не удалось создать/обновить мастерскую');
       }
     }
   };
@@ -86,7 +86,7 @@ const RepairShopManager: React.FC = () => {
         setSelectedAddress(null);
       }
     } catch (error) {
-      console.error('Error fetching address:', error);
+      console.error('Ошибка при получении адреса:', error);
     }
     setShowAddressForm(true);
   };
@@ -95,9 +95,9 @@ const RepairShopManager: React.FC = () => {
     try {
       await deleteRepairShop(id);
       setRepairShops(repairShops.filter(shop => shop.id !== id));
-      setResponse(`Shop deleted: ${id}`);
+      setResponse(`Мастерская удалена: ${id}`);
     } catch (error) {
-      setResponse('Error: Unable to delete shop');
+      setResponse('Ошибка: не удалось удалить мастерскую');
     }
   };
 
@@ -111,16 +111,16 @@ const RepairShopManager: React.FC = () => {
 
   return (
     <Container>
-      <Typography variant="h4">{selectedShopId ? 'Edit' : 'Create'} Repair Shop</Typography>
+      <Typography variant="h4">{selectedShopId ? 'Редактировать' : 'Создать'} Ремонтную Мастерскую</Typography>
       <TextField
-        label="Shop Name"
+        label="Название мастерской"
         value={name}
         onChange={(e) => setName(e.target.value)}
         fullWidth
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleCreateOrUpdateShop}>
-        {selectedShopId ? 'Update Shop' : 'Create Shop'}
+        {selectedShopId ? 'Обновить мастерскую' : 'Создать мастерскую'}
       </Button>
       {response && <Typography>{response}</Typography>}
 
@@ -134,7 +134,7 @@ const RepairShopManager: React.FC = () => {
       )}
 
       <Button variant="text" color="primary" onClick={() => setShowAddressForm(!showAddressForm)}>
-        {showAddressForm ? 'Hide Address Form' : 'Add Address'}
+        {showAddressForm ? 'Скрыть форму адреса' : 'Добавить адрес'}
       </Button>
 
       <Collapse in={showAddressForm && !selectedShopId}>
@@ -146,19 +146,19 @@ const RepairShopManager: React.FC = () => {
         />
       </Collapse>
 
-      <Typography variant="h4">Repair Shops</Typography>
+      <Typography variant="h4">Ремонтные Мастерские</Typography>
       <List>
         {repairShops.map((shop) => (
           <ListItem key={shop.id} component={Paper} elevation={selectedShopId === shop.id ? 4 : 1}>
             <ListItemText primary={shop.name} />
             <Button variant="contained" color="primary" onClick={() => handleEdit(shop)}>
-              Edit
+              Редактировать
             </Button>
             <Button variant="contained" color="secondary" onClick={() => handleDelete(shop.id)}>
-              Delete
+              Удалить
             </Button>
             <Button variant="contained" color="secondary" onClick={() => handleGoToRepairShopPage(shop.id)}>
-              Go to Repair Shop Page
+              Перейти на страницу мастерской
             </Button>
           </ListItem>
         ))}
@@ -168,4 +168,3 @@ const RepairShopManager: React.FC = () => {
 };
 
 export default RepairShopManager;
-

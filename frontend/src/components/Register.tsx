@@ -14,12 +14,12 @@ const Register: React.FC = () => {
     try {
       const { user_id, token } = await registerUser(email, password);
       setToken(token, user_id);
-      setResponse(`Success: ${user_id}`);
+      setResponse(`Успешно: ${user_id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to register');
+        setResponse('Ошибка: не удалось зарегистрироваться');
       }
     }
   };
@@ -27,14 +27,14 @@ const Register: React.FC = () => {
   return (
     <Container>
       <TextField
-        label="Email"
+        label="Электронная почта"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Password"
+        label="Пароль"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
@@ -42,7 +42,7 @@ const Register: React.FC = () => {
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleRegister}>
-        Register
+        Зарегистрироваться
       </Button>
       {response && <Typography>{response}</Typography>}
     </Container>
@@ -50,4 +50,3 @@ const Register: React.FC = () => {
 };
 
 export default Register;
-

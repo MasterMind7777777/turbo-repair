@@ -5,7 +5,7 @@ import RepairShopDetail from '../components/RepairShopDetail';
 const RepairShopDetailPage: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4">Repair Shop Detail</Typography>
+      <Typography variant="h4">Страница конкретной мастерской</Typography>
       <RepairShopDetail  />
     </Container>
   );

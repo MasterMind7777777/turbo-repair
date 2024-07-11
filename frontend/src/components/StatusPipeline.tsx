@@ -12,40 +12,40 @@ const StatusPipeline: React.FC = () => {
 
   const handleAddStatusPipelineEntry = async () => {
     if (!token) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
     try {
       const { id } = await addStatusPipelineEntry(orderId, status);
-      setResponse(`Status pipeline entry added: ${id}`);
+      setResponse(`Запись в статус пайплайн добавлена: ${id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to add status pipeline entry');
+        setResponse('Ошибка: не удалось добавить запись в статус пайплайн');
       }
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4">Add Status Pipeline Entry</Typography>
+      <Typography variant="h4">Добавить запись в статус пайплайн</Typography>
       <TextField
-        label="Order ID"
+        label="ID заказа"
         value={orderId}
         onChange={(e) => setOrderId(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Status"
+        label="Статус"
         value={status}
         onChange={(e) => setStatus(e.target.value)}
         fullWidth
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleAddStatusPipelineEntry}>
-        Add Entry
+        Добавить запись
       </Button>
       {response && <Typography>{response}</Typography>}
     </Container>
@@ -53,4 +53,3 @@ const StatusPipeline: React.FC = () => {
 };
 
 export default StatusPipeline;
-

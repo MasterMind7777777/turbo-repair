@@ -33,10 +33,10 @@ const AddressForm: React.FC<AddressFormProps> = ({ repairShopId, addressId, exis
       let address: AddressResponse;
       if (addressId) {
         address = await updateAddress(addressId, street, city, state, zip, country);
-        setResponse('Address updated successfully');
+        setResponse('Адрес успешно обновлён');
       } else {
         address = await addAddress(repairShopId, street, city, state, zip, country);
-        setResponse('Address added successfully');
+        setResponse('Адрес успешно добавлен');
       }
       onAddressAddedOrUpdated(address);
       setStreet('');
@@ -45,50 +45,50 @@ const AddressForm: React.FC<AddressFormProps> = ({ repairShopId, addressId, exis
       setZip('');
       setCountry('');
     } catch (error) {
-      setResponse('Error: Unable to save address');
+      setResponse('Ошибка: не удалось сохранить адрес');
     }
   };
 
   return (
     <Container>
-      <Typography variant="h6">{addressId ? 'Update Address' : 'Add Address'}</Typography>
+      <Typography variant="h6">{addressId ? 'Обновить Адрес' : 'Добавить Адрес'}</Typography>
       <TextField
-        label="Street"
+        label="Улица"
         value={street}
         onChange={(e) => setStreet(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="City"
+        label="Город"
         value={city}
         onChange={(e) => setCity(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="State"
+        label="Штат/Область"
         value={state}
         onChange={(e) => setState(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Zip"
+        label="Индекс"
         value={zip}
         onChange={(e) => setZip(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Country"
+        label="Страна"
         value={country}
         onChange={(e) => setCountry(e.target.value)}
         fullWidth
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleSaveAddress}>
-        {addressId ? 'Update Address' : 'Add Address'}
+        {addressId ? 'Обновить Адрес' : 'Добавить Адрес'}
       </Button>
       {response && <Typography>{response}</Typography>}
     </Container>
@@ -96,4 +96,3 @@ const AddressForm: React.FC<AddressFormProps> = ({ repairShopId, addressId, exis
 };
 
 export default AddressForm;
-

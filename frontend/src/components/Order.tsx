@@ -25,7 +25,7 @@ const Order: React.FC = () => {
       const orderList = await getOrders();
       setOrders(orderList);
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.error('Ошибка при получении заказов:', error);
     }
   };
 
@@ -37,41 +37,41 @@ const Order: React.FC = () => {
 
   const handleUpdateOrderStatus = async (id: string, newStatus: string) => {
     if (!token) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
     try {
       await updateOrderStatus(id, newStatus);
-      setResponse(`Order status updated: ${id}`);
+      setResponse(`Статус заказа обновлен: ${id}`);
       fetchOrders(); // Refresh the list after status update
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to update order status');
+        setResponse('Ошибка: не удалось обновить статус заказа');
       }
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4">Orders</Typography>
+      <Typography variant="h4">Заказы</Typography>
       <List>
         {orders.map(order => (
           <ListItem key={order.id} component={Paper} elevation={1}>
             <ListItemText
-              primary={`Order ID: ${order.id}`}
-              secondary={`Status: ${order.status} | Created at: ${new Date(order.created_at).toLocaleString()}`}
+              primary={`ID заказа: ${order.id}`}
+              secondary={`Статус: ${order.status} | Создан: ${new Date(order.created_at).toLocaleString()}`}
             />
             <TextField
-              label="New Status"
+              label="Новый статус"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
               fullWidth
               margin="normal"
             />
             <Button variant="contained" color="primary" onClick={() => handleUpdateOrderStatus(order.id, status)}>
-              Update Status
+              Обновить статус
             </Button>
           </ListItem>
         ))}
@@ -82,4 +82,3 @@ const Order: React.FC = () => {
 };
 
 export default Order;
-

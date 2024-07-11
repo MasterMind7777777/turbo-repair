@@ -5,7 +5,7 @@ import RepairRequest from '../components/RepairRequest';
 const RepairRequestPage: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4">Submit Repair Request</Typography>
+      <Typography variant="h4">Страница заявки</Typography>
       <RepairRequest />
     </Container>
   );

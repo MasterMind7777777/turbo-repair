@@ -5,7 +5,7 @@ import RepairShopManager from '../components/RepairShop';
 const RepairShopPage: React.FC = () => {
   return (
     <Container>
-      <Typography variant="h4">Create Repair Shop</Typography>
+      <Typography variant="h4">Страница упарвления мастерскими</Typography>
       <RepairShopManager />
     </Container>
   );

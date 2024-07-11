@@ -7,28 +7,28 @@ const Navbar: React.FC = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h6" style={{ flexGrow: 1 }}>
-          Repair Shop Management
+          Управление Ремонтной Мастерской
         </Typography>
         <Button color="inherit" component={Link} to="/">
-          Auth
+          Авторизация
         </Button>
         <Button color="inherit" component={Link} to="/repair-shop">
-          Repair Shop
+          Ремонтная Мастерская
         </Button>
         <Button color="inherit" component={Link} to="/repair-request">
-          Repair Request
+          Запрос на Ремонт
         </Button>
         <Button color="inherit" component={Link} to="/bid">
-          Bid
+          Приём заявок
         </Button>
         <Button color="inherit" component={Link} to="/order">
-          Order
+          Заказ
         </Button>
         <Button color="inherit" component={Link} to="/status-pipeline">
-          Status Pipeline
+          Статус Пайплайн
         </Button>
         <Button color="inherit" component={Link} to="/staff">
-          Staff
+          Персонал
         </Button>
       </Toolbar>
     </AppBar>
@@ -36,4 +36,3 @@ const Navbar: React.FC = () => {
 };
 
 export default Navbar;
-

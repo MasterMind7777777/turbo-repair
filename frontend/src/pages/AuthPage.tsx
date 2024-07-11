@@ -8,7 +8,7 @@ const AuthPage: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Authentication
+        Страница аунтентификации
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={4}>

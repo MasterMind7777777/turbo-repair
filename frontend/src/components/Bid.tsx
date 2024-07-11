@@ -29,7 +29,7 @@ const Bid: React.FC = () => {
       const requests = await getAvailableRequests();
       setAvailableRequests(requests);
     } catch (error) {
-      console.error('Error fetching available requests:', error);
+      console.error('Ошибка при получении доступных запросов:', error);
     }
   };
 
@@ -38,30 +38,30 @@ const Bid: React.FC = () => {
       const shops = await getRepairShops();
       setRepairShops(shops);
     } catch (error) {
-      console.error('Error fetching repair shops:', error);
+      console.error('Ошибка при получении ремонтных мастерских:', error);
     }
   };
 
   const handleBid = async () => {
     if (!token || !selectedRequest || !selectedRepairShopId) {
-      setResponse('Error: Not authenticated or no request/repair shop selected');
+      setResponse('Ошибка: не авторизован или не выбран запрос/ремонтная мастерская');
       return;
     }
     try {
       const { id } = await submitBid(selectedRequest.id, selectedRepairShopId, status, bidAmount);
-      setResponse(`Bid submitted successfully: ${id}`);
+      setResponse(`Заявка успешно отправлена: ${id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to submit bid');
+        setResponse('Ошибка: не удалось отправить заявку');
       }
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4">Available Repair Requests</Typography>
+      <Typography variant="h4">Доступные запросы на ремонт</Typography>
       <Grid container spacing={2}>
         {availableRequests.map(request => (
           <Grid item xs={12} sm={6} md={4} key={request.id}>
@@ -72,21 +72,21 @@ const Bid: React.FC = () => {
             >
               <Typography variant="h6">{request.description}</Typography>
               <Typography variant="body2">
-                Submitted on: {new Date(request.created_at).toLocaleString()}
+                Отправлено: {new Date(request.created_at).toLocaleString()}
               </Typography>
-              <Typography variant="body2">Request ID: {request.id}</Typography>
+              <Typography variant="body2">ID запроса: {request.id}</Typography>
             </Paper>
           </Grid>
         ))}
       </Grid>
       {selectedRequest && (
         <Box mt={4}>
-          <Typography variant="h4">Submit Bid</Typography>
+          <Typography variant="h4">Отправить заявку</Typography>
           <Typography variant="h6">
-            Repair Request: {selectedRequest.description} (ID: {selectedRequest.id})
+            Запрос на ремонт: {selectedRequest.description} (ID: {selectedRequest.id})
           </Typography>
           <FormControl fullWidth margin="normal">
-            <InputLabel id="repair-shop-label">Repair Shop</InputLabel>
+            <InputLabel id="repair-shop-label">Ремонтная Мастерская</InputLabel>
             <Select
               labelId="repair-shop-label"
               value={selectedRepairShopId}
@@ -100,14 +100,14 @@ const Bid: React.FC = () => {
             </Select>
           </FormControl>
           <TextField
-            label="Status"
+            label="Статус"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Bid Amount"
+            label="Сумма заявки"
             type="number"
             value={bidAmount}
             onChange={(e) => setBidAmount(Number(e.target.value))}
@@ -115,7 +115,7 @@ const Bid: React.FC = () => {
             margin="normal"
           />
           <Button variant="contained" color="primary" onClick={handleBid}>
-            Submit Bid
+            Отправить заявку
           </Button>
           {response && <Typography>{response}</Typography>}
         </Box>
@@ -125,4 +125,3 @@ const Bid: React.FC = () => {
 };
 
 export default Bid;
-

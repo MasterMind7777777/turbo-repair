@@ -13,47 +13,47 @@ const AddStaffForm: React.FC = () => {
 
   const handleAddStaff = async () => {
     if (!token) {
-      setResponse('Error: Not authenticated');
+      setResponse('Ошибка: не авторизован');
       return;
     }
     try {
       const { id } = await addStaff(userId, repairShopId, role);
-      setResponse(`Staff added successfully: ${id}`);
+      setResponse(`Персонал успешно добавлен: ${id}`);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setResponse(`Error: ${error.response.data}`);
+        setResponse(`Ошибка: ${error.response.data}`);
       } else {
-        setResponse('Error: Unable to add staff');
+        setResponse('Ошибка: не удалось добавить персонал');
       }
     }
   };
 
   return (
     <Container>
-      <Typography variant="h4">Add Staff</Typography>
+      <Typography variant="h4">Добавить Персонал</Typography>
       <TextField
-        label="User ID"
+        label="ID Пользователя"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Repair Shop ID"
+        label="ID Ремонтной Мастерской"
         value={repairShopId}
         onChange={(e) => setRepairShopId(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Role"
+        label="Роль"
         value={role}
         onChange={(e) => setRole(e.target.value)}
         fullWidth
         margin="normal"
       />
       <Button variant="contained" color="primary" onClick={handleAddStaff}>
-        Add Staff
+        Добавить Персонал
       </Button>
       {response && <Typography>{response}</Typography>}
     </Container>
@@ -61,4 +61,3 @@ const AddStaffForm: React.FC = () => {
 };
 
 export default AddStaffForm;
-
